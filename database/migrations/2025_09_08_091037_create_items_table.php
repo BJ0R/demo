@@ -8,18 +8,15 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('students', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('age');
-            $table->string('section');
-            $table->enum('department', ['CAS', 'CBME', 'CTE']);
+            $table->text('description');
+            $table->decimal('price', 8, 2);
+            $table->integer('quantity');
             $table->timestamps();
         });
     }
 
-    public function down()
-    {
-        Schema::dropIfExists('students');
-    }
+
 };

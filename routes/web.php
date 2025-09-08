@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ItemController;
 
-Route::get('/', [StudentController::class, 'index']);
-Route::resource('students', StudentController::class)->except(['show']);
+Route::get('/items', [ItemController::class, 'index']);
