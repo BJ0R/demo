@@ -3,4 +3,5 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
 
-Route::get('/items', [ItemController::class, 'index']);
+Route::get('/', [ItemController::class, 'index'])->name('home');
+Route::resource('items', ItemController::class);
