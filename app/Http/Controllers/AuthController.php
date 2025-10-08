@@ -4,46 +4,65 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Show the login form
-    public function showLoginForm()
+    public function showLogin()
     {
         return view('auth.login');
     }
 
-    // Handle the login request
     public function login(Request $request)
     {
-        // Validate the input fields
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to log the user in
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-
-            return redirect()->intended('/dashboard'); // or wherever you want after login
+        if (Auth::attempt($credentials, false)) {
+            $request->session()->regenerate(); // prevent session fixation
+            return redirect()->intended(route('home'));
         }
 
-        // If authentication fails, redirect back with error
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
 
-    // Handle logout
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'email'                 => ['required', 'email', 'unique:users,email'],
+            'password'              => ['required', 'min:8', 'confirmed'], // needs password_confirmation
+        ]);
+
+        // If your users table still requires 'name', derive it from email to avoid schema changes
+        $name = strstr($validated['email'], '@', true) ?: 'User';
+
+        $user = User::create([
+            'name'     => $name,
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

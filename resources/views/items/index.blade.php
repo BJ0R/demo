@@ -7,8 +7,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4">Items List</h1>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">Items List</h1>
+
+        @auth
+        <div class="d-flex align-items-center">
+            <span class="me-3 text-muted small">{{ auth()->user()->email }}</span>
+            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+        @endauth
+    </div>
 
     <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Add Item</a>
 
